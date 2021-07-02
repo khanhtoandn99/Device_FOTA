@@ -1,0 +1,6 @@
+Sim7600.c:17:6:sim7600_init	8	static
+Sim7600.c:24:6:sim7600_irqProcess	8	static
+Sim7600.c:37:7:sim7600_sendCmd	32	static
+Sim7600.c:72:6:sim7600_memreset	8	static
+Sim7600.c:80:7:sim7600_available	4	static
+Sim7600.c:86:7:sim7600_read	4	static

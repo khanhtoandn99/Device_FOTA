@@ -1,0 +1,40 @@
+/*
+ * Flash.c
+ *
+ *  Created on: Jul 1, 2021
+ *      Author: ASUS
+ */
+
+#include <Flash.h>
+
+void flash_testFunc() {
+
+
+}
+
+
+
+void Flash_erase( uint32_t _page ) {
+	FLASH_EraseInitTypeDef EraseStruct ;
+	static uint32_t PageEraseERROR_Addr  ;
+	HAL_FLASH_Unlock() ;
+	if( _page <= LAST_PAGE_ADDR_BANK1)
+		EraseStruct.Banks = FLASH_BANK_1 ;
+	else
+		EraseStruct.Banks = FLASH_BANK_2 ;
+	EraseStruct.NbPages = 1 ;
+	EraseStruct.TypeErase = FLASH_TYPEERASE_PAGES ;
+	EraseStruct.Page = _page ;
+
+	if( HAL_FLASHEx_Erase( &EraseStruct, &PageEraseERROR_Addr ) != HAL_OK )
+		return (void)HAL_FLASH_GetError() ;
+
+	HAL_FLASH_Lock() ;
+}
+
+
+
+void Flash_program( ) {
+	HAL_FLASH_Unlock() ;
+
+}

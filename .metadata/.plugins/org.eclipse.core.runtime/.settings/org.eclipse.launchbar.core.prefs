@@ -1,0 +1,10 @@
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/arch=x86_64
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/name=Local
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/os=win32
+configDescList=org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:FOTA_FW Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:Running_FW Debug,org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:Bootloader_FW Debug
+eclipse.preferences.version=1
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:Bootloader_FW\ Debug/activeLaunchMode=run
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:Bootloader_FW\ Debug/activeLaunchTarget=null\:---
+org.eclipse.launchbar.core.descriptorType.default\:Bootloader_FW\ Debug/activeLaunchMode=run
+org.eclipse.launchbar.core.descriptorType.default\:FOTA_FW\ Debug/activeLaunchMode=run
+org.eclipse.launchbar.core.descriptorType.default\:FOTA_FW\ Debug/activeLaunchTarget=org.eclipse.launchbar.core.launchTargetType.local\:Local

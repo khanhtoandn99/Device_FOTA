@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;Bootloader_FW/Sim7x00/Sim7600.cpp&apos; to &apos;Sim7600.c&apos;" description="Rename resource &apos;Sim7600.cpp&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="Sim7x00/Sim7600.cpp" name="Sim7600.c" stamp="1625125683707" updateReferences="true"/>
+</session>

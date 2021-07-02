@@ -1,0 +1,17 @@
+/*
+ * FlashL4.h
+ *
+ *  Created on: Jul 2, 2021
+ *      Author: ASUS
+ */
+
+#ifndef FLASH_FLASHL4_H_
+#define FLASH_FLASHL4_H_
+
+class Flash_L4 {
+public:
+	Flash_L4();
+	virtual ~Flash_L4();
+};
+
+#endif /* FLASH_FLASHL4_H_ */

@@ -1,0 +1,32 @@
+/*
+ * Sim7600.h
+ *
+ *  Created on: Jun 30, 2021
+ *      Author: ASUS
+ */
+
+#ifndef SIM7600_H_
+#define SIM7600_H_
+
+#include "stm32l4xx_hal.h"
+#include "string.h"
+#include "usart.h"
+
+#define SIM_UART_TXRX  huart1
+#define SIM_UART_DEBUG huart2
+
+#define TERMINAL_TXRX huart2
+
+#define RXDATA_MAX 1000
+
+char rxData[ RXDATA_MAX ] = {0} ;
+char rxByte[ 1 ] = {0} ;
+unsigned int rxCnt = 0 ;
+_Bool rxDone_Flag = 0 ;
+
+void sim7600_init() ;
+void sim7600_irqProcess() ;
+_Bool sim7600_sendCmd( const char* _cmd, const char* _expectedAnswer, unsigned int _timeOut ) ;
+void sim7600_memreset() ;
+
+#endif /* SIM7600_H_ */

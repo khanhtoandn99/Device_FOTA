@@ -1,0 +1,5 @@
+Flash.c:11:6:flash_testFunc	4	static
+Flash.c:19:6:Flash_erase	32	static
+Flash.c:40:6:Flash_write	72	dynamic
+Flash.c:69:7:Flash_read_doubleWord	40	static
+Flash.c:89:7:Flash_read	56	dynamic

@@ -1,0 +1,7 @@
+Terminal.c:15:6:terminal_init	8	static
+Terminal.c:22:6:terminal_irqProcess	8	static
+Terminal.c:35:6:terminal_memreset	8	static
+Terminal.c:43:7:terminal_available	4	static
+Terminal.c:49:7:terminal_read	4	static
+Terminal.c:55:6:terminal_print	16	static
+Terminal.c:61:6:terminal_println	32	dynamic
