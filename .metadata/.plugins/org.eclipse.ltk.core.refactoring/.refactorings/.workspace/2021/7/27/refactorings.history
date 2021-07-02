@@ -1,4 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Delete 2 resources" deleteContents="false" description="Delete 2 resources" element1="/Bootloader_FW/hw/Flash/flash.c" element2="/Bootloader_FW/hw/Flash/flash.h" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="2" stamp="1625131787535"/>
+<session version="1.0">&#x0A;<refactoring comment="Delete 2 resources" deleteContents="false" description="Delete 2 resources" element1="/Bootloader_FW/hw/Flash/flash.c" element2="/Bootloader_FW/hw/Flash/flash.h" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="2" stamp="1625131787535"/>&#x0A;<refactoring comment="Delete 2 resources" deleteContents="false" description="Delete 2 resources" element1="/Bootloader_FW/hw/Flash/Flash.c" element2="/Bootloader_FW/hw/Flash/Flash.h" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="2" stamp="1625223629090"/>
 </session>

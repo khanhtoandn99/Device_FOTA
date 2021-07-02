@@ -31,8 +31,7 @@ hw/Sim7x00/Sim7600.o: ../hw/Sim7x00/Sim7600.c \
  ../Core/Inc/usart.h ../Core/Inc/main.h ../Core/Inc/gpio.h \
  D:/CODE\ ARM/NUCLEO-STM32L476RG/FOTA_Project/Bootloader_FW/hw/Sim7x00/Sim7600.h \
  D:/CODE\ ARM/NUCLEO-STM32L476RG/FOTA_Project/Bootloader_FW/hw/Terminal/Terminal.h \
- D:/CODE\ ARM/NUCLEO-STM32L476RG/FOTA_Project/Bootloader_FW/hw/Flash/flash.h \
- D:/CODE\ ARM/NUCLEO-STM32L476RG/FOTA_Project/Bootloader_FW/hw/Flash/FlashL4.h
+ D:/CODE\ ARM/NUCLEO-STM32L476RG/FOTA_Project/Bootloader_FW/hw/Flash/L4Flash.h
 
 D:/CODE\ ARM/NUCLEO-STM32L476RG/FOTA_Project/Bootloader_FW/hw/hw.h:
 
@@ -102,6 +101,4 @@ D:/CODE\ ARM/NUCLEO-STM32L476RG/FOTA_Project/Bootloader_FW/hw/Sim7x00/Sim7600.h:
 
 D:/CODE\ ARM/NUCLEO-STM32L476RG/FOTA_Project/Bootloader_FW/hw/Terminal/Terminal.h:
 
-D:/CODE\ ARM/NUCLEO-STM32L476RG/FOTA_Project/Bootloader_FW/hw/Flash/flash.h:
-
-D:/CODE\ ARM/NUCLEO-STM32L476RG/FOTA_Project/Bootloader_FW/hw/Flash/FlashL4.h:
+D:/CODE\ ARM/NUCLEO-STM32L476RG/FOTA_Project/Bootloader_FW/hw/Flash/L4Flash.h:

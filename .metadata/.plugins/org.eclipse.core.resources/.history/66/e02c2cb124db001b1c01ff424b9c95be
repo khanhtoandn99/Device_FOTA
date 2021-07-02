@@ -1,0 +1,19 @@
+/*
+ * L4Flash.c
+ *
+ *  Created on: Jul 2, 2021
+ *      Author: ASUS
+ */
+
+#include <L4Flash.h>
+
+L4_Flash::L4_Flash()
+{
+	// TODO Auto-generated constructor stub
+
+}
+
+L4_Flash::~L4_Flash()
+{
+	// TODO Auto-generated destructor stub
+}

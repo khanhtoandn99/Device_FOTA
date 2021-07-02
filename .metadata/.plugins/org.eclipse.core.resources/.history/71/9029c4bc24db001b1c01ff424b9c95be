@@ -17,6 +17,6 @@
 
 #include "Sim7600.h"
 #include "Terminal.h"
-#include "L4Flash.h"
+#include "flash.h"
 
 #endif /* HW_H_ */

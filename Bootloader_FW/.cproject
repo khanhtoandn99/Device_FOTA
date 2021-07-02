@@ -53,7 +53,7 @@
                             							
                             <option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.nanoscanffloat.884562083" name="Use float with scanf from newlib-nano (-u _scanf_float)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.nanoscanffloat" useByScannerDiscovery="false" value="true" valueType="boolean"/>
                             							
-                            <option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.converthex.947249480" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.converthex" value="true" valueType="boolean"/>
+                            <option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.converthex.947249480" name="Convert to Intel Hex file (-O ihex)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.converthex" useByScannerDiscovery="false" value="true" valueType="boolean"/>
                             							
                             <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.targetplatform.6497559" isAbstract="false" osList="all" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.targetplatform"/>
                             							
@@ -97,11 +97,11 @@
                                     									
                                     <listOptionValue builtIn="false" value="&quot;D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\Bootloader_FW\hw&quot;"/>
                                     									
-                                    <listOptionValue builtIn="false" value="&quot;D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\Bootloader_FW\hw\Flash&quot;"/>
-                                    									
                                     <listOptionValue builtIn="false" value="&quot;D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\Bootloader_FW\hw\Sim7x00&quot;"/>
                                     									
                                     <listOptionValue builtIn="false" value="&quot;D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\Bootloader_FW\hw\Terminal&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\Bootloader_FW\hw\Flash&quot;"/>
                                     								
                                 </option>
                                 								
