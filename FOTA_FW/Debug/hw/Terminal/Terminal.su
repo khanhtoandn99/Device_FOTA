@@ -1,0 +1,8 @@
+gthr-default.h:229:1:int __gthread_key_delete(__gthread_key_t)	16	static
+Terminal.cpp:12:1:Terminal::Terminal(UART_HandleTypeDef*)	16	static
+Terminal.cpp:20:1:Terminal::~Terminal()	16	static
+Terminal.cpp:20:1:virtual Terminal::~Terminal()	16	static
+Terminal.cpp:27:6:void Terminal::init()	16	static
+Terminal.cpp:34:6:void Terminal::irqProcess()	16	static
+Terminal.cpp:46:6:void Terminal::print(const char*)	24	static
+Terminal.cpp:53:6:void Terminal::println(const char*)	40	dynamic

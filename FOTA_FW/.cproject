@@ -49,7 +49,11 @@
                             							
                             <option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.defaults.299732221" name="Defaults" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.defaults" useByScannerDiscovery="false" value="com.st.stm32cube.ide.common.services.build.inputs.revA.1.0.4 || Debug || true || Executable || com.st.stm32cube.ide.mcu.gnu.managedbuild.option.toolchain.value.workspace || NUCLEO-L476RG || 0 || 0 || arm-none-eabi- || ${gnu_tools_for_stm32_compiler_path} || ../Drivers/CMSIS/Include | ../Core/Inc | ../Drivers/CMSIS/Device/ST/STM32L4xx/Include | ../Drivers/STM32L4xx_HAL_Driver/Inc | ../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy ||  ||  || USE_HAL_DRIVER | STM32L476xx ||  || Drivers | Core/Startup | Core ||  ||  || ${workspace_loc:/${ProjName}/STM32L476RGTX_FLASH.ld} || true || NonSecure ||  || secure_nsclib.o ||  || None" valueType="string"/>
                             							
-                            <option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.converthex.1482814415" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.converthex" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                            <option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.converthex.1482814415" name="Convert to Intel Hex file (-O ihex)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.converthex" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                            							
+                            <option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.nanoprintffloat.1729801473" name="Use float with printf from newlib-nano (-u _printf_float)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.nanoprintffloat" useByScannerDiscovery="false" value="true" valueType="boolean"/>
+                            							
+                            <option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.nanoscanffloat.1981098400" name="Use float with scanf from newlib-nano (-u _scanf_float)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.option.nanoscanffloat" useByScannerDiscovery="false" value="true" valueType="boolean"/>
                             							
                             <targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.targetplatform.422514236" isAbstract="false" osList="all" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.targetplatform"/>
                             							
@@ -124,6 +128,14 @@
                                     <listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32L4xx/Include"/>
                                     									
                                     <listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\FOTA_FW\hw\Flash&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\FOTA_FW\hw\Sim7x00&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\FOTA_FW\hw\Terminal&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\FOTA_FW\hw&quot;"/>
                                     								
                                 </option>
                                 								
@@ -172,6 +184,8 @@
                         <entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Core"/>
                         						
                         <entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
+                        						
+                        <entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="hw"/>
                         					
                     </sourceEntries>
                     				
@@ -266,6 +280,14 @@
                                     <listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32L4xx/Include"/>
                                     									
                                     <listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\FOTA_FW\hw&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\FOTA_FW\hw\Flash&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\FOTA_FW\hw\Sim7x00&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\FOTA_FW\hw\Terminal&quot;"/>
                                     								
                                 </option>
                                 								
@@ -298,6 +320,14 @@
                                     <listOptionValue builtIn="false" value="../Drivers/CMSIS/Device/ST/STM32L4xx/Include"/>
                                     									
                                     <listOptionValue builtIn="false" value="../Drivers/CMSIS/Include"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\FOTA_FW\hw&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\FOTA_FW\hw\Flash&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\FOTA_FW\hw\Sim7x00&quot;"/>
+                                    									
+                                    <listOptionValue builtIn="false" value="&quot;D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\FOTA_FW\hw\Terminal&quot;"/>
                                     								
                                 </option>
                                 								
@@ -398,6 +428,22 @@
             <autodiscovery enabled="false" problemReportingEnabled="true" selectedProfileId=""/>
             		
         </scannerConfigBuildInfo>
+        	
+    </storageModule>
+    	
+    <storageModule moduleId="refreshScope" versionNumber="2">
+        		
+        <configuration configurationName="Debug">
+            			
+            <resource resourceType="PROJECT" workspacePath="/FOTA_FW"/>
+            		
+        </configuration>
+        		
+        <configuration configurationName="Release">
+            			
+            <resource resourceType="PROJECT" workspacePath="/FOTA_FW"/>
+            		
+        </configuration>
         	
     </storageModule>
     

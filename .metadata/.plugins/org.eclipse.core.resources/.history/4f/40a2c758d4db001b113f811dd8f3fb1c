@@ -1,0 +1,18 @@
+/*
+ * Terminal.cpp
+ *
+ *  Created on: Jul 3, 2021
+ *      Author: ASUS
+ */
+
+#include "hw.h"
+
+Terminal::Terminal() {
+	huartx = &*_huartx ;
+
+}
+
+Terminal::~Terminal() {
+
+}
+

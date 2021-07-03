@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;FOTA_FW/hw/Flash/L4Flash.c&apos; to &apos;L4Flash.cpp&apos;" description="Rename resource &apos;L4Flash.c&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="hw/Flash/L4Flash.c" name="L4Flash.cpp" stamp="1625297275001" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;FOTA_FW/Core/Src/main.c&apos; to &apos;main.cpp&apos;" description="Rename resource &apos;main.c&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="Core/Src/main.c" name="main.cpp" stamp="1625298689243" updateReferences="true"/>
+</session>

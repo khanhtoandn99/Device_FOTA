@@ -1,0 +1,6 @@
+gthr-default.h:229:1:int __gthread_key_delete(__gthread_key_t)	16	static
+L4Flash.cpp:11:6:void flash_testFunc()	4	static
+L4Flash.cpp:19:6:void Flash_erase(uint32_t)	32	static
+L4Flash.cpp:40:6:void Flash_write_str(uint32_t, const char*)	72	dynamic
+L4Flash.cpp:69:7:char* Flash_read_doubleWord(uint64_t)	40	static
+L4Flash.cpp:89:7:void Flash_read_str(uint64_t, uint64_t, char*)	56	dynamic

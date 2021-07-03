@@ -109,7 +109,9 @@ int main(void)
 
   Flash_erase( 255 ) ;
 
-  Flash_write( 0x0807F800, "version: 1.0.0Helllo" ) ;
+  // 008001209D160008691200086F120008
+
+  Flash_write_str( 0x0807F800, "008001209D160008691200086F120008" ) ;
 
   // read flash
 
@@ -118,7 +120,7 @@ int main(void)
 
   char rx[ 0x0807F818 - 0x0807F800 ] ;
   memset( rx, 0, 0x0807F818 - 0x0807F800 ) ;
-  Flash_read( 0x0807F800, 0x0807F818, rx ) ;
+  Flash_read_str( 0x0807F800, 0x0807F818, rx ) ;
   terminal_println( (const char*)rx, 2000 ) ;
 
 
