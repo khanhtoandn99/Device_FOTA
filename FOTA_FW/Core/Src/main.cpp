@@ -218,7 +218,7 @@ Hex_record getRecord( int _dir ) {
 
 	// Tạo câu lệnh CMD để lấy dữ liệu recode thứ location
 	char cmd[ strlen( FIRMWARE_PATH ) + 50 ] = {0} ;
-	sprintf( cmd, "AT+CFTRANTX=\"%s\",%d,200", FIRMWARE_PATH, nowLocation ) ; // SỐ 50 trong string Cmd là mỗi lần kiểm tra record, sẽ lấy 50 ký tự
+	sprintf( cmd, "AT+CFTRANTX=\"%s\",%d,100", FIRMWARE_PATH, nowLocation ) ; // SỐ 50 trong string Cmd là mỗi lần kiểm tra record, sẽ lấy 50 ký tự
 	Sim7600.sendCmd( cmd, "OK", 2000 ) ;
 
 	// Eg:

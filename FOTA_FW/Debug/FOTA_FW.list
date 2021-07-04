@@ -1830,7 +1830,7 @@ Hex_record getRecord( int _dir ) {
  8001318:	2100      	movs	r1, #0
  800131a:	4618      	mov	r0, r3
  800131c:	f003 ff88 	bl	8005230 <memset>
-	sprintf( cmd, "AT+CFTRANTX=\"%s\",%d,200", FIRMWARE_PATH, nowLocation ) ; // SỐ 50 trong string Cmd là mỗi lần kiểm tra record, sẽ lấy 50 ký tự
+	sprintf( cmd, "AT+CFTRANTX=\"%s\",%d,100", FIRMWARE_PATH, nowLocation ) ; // SỐ 50 trong string Cmd là mỗi lần kiểm tra record, sẽ lấy 50 ký tự
  8001320:	4b93      	ldr	r3, [pc, #588]	; (8001570 <_Z9getRecordi+0x2a8>)
  8001322:	681b      	ldr	r3, [r3, #0]
  8001324:	f107 000c 	add.w	r0, r7, #12
