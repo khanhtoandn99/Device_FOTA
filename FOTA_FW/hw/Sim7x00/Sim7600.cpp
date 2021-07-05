@@ -79,13 +79,6 @@ bool Sim7600::sendCmd( const char* _cmd, const char* _expectedAnswer, unsigned i
 
 
 
-/*____________________________________________________________________________________________________________________________________________*/
-string  Sim7600::getRecord( unsigned int _start, unsigned int _end ) {
-	char cmd[ strlen( FIRMWARE_PATH ) + 50 ] = {0} ;
-	sprintf( cmd, "AT+CFTRANTX=\"%s\",%d,%d", FIRMWARE_PATH, _start, _end ) ;
-	sendCmd( cmd, "OK", 2000 ) ;
-
-}
 
 
 

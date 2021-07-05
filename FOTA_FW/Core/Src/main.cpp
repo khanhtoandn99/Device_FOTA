@@ -51,7 +51,7 @@ using namespace std;
 Sim7600 Sim7600( &huart1 ) ;
 Terminal Terminal( &huart2 ) ;
 
-struct Hex_record {
+struct HFR_strTypeDef {
 	char startCode[2] = {':'} ;
 	char byteCount[3] = {0} ;
 	char address[5] = {0} ;
@@ -61,7 +61,17 @@ struct Hex_record {
 
 };
 
-Hex_record RecordReturn ;
+
+struct HFR_hexArrTypeDef {
+	uint8_t startCode[2] = {':'} ;
+	uint8_t byteCount[2] = {0} ;
+	uint8_t address[3] = {0} ;
+	uint8_t recordType[2] = {0} ;
+	uint8_t data[17] = {0} ;
+	uint8_t checkSum[2] = {0} ;
+
+};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -69,8 +79,15 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) ;
 
-uint8_t parse_doubleOfChar( char c0, char c1 ) ;
-Hex_record getRecord( int _dir ) ;
+uint8_t parseToHex( char c0, char c1 ) ;
+
+HFR_strTypeDef getStrRecord( int _dir ) ;
+
+HFR_hexArrTypeDef parse_strToHexArrRecord( HFR_strTypeDef _strRecord ) ;
+
+int checkRecord( HFR_strTypeDef _strRecord ) ;
+
+bool checkAllRecordData() ;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -116,27 +133,25 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
+	// First config
+  Sim7600.sendCmd( "AT", "OK", 200 ) ;
+  Sim7600.sendCmd( "AT+FSCD=E:", "OK", 200 ) ;
+  Sim7600.sendCmd( "AT+CATR=1", "OK", 200 ) ;
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 	  if( Sim7600.rxDone_Flag == true ) {
-		  Terminal.println( Sim7600.rxData.c_str() ) ;
+//		  Terminal.println( Sim7600.rxData.c_str() ) ;
 		  Sim7600.memreset() ;
 	  }
 
 	  if( HAL_GPIO_ReadPin( user_btn_GPIO_Port, user_btn_Pin ) == 0 ) {
 		  HAL_Delay( 200 ) ;
-		  Hex_record data = getRecord(2) ;
-		  Terminal.println( "Record " ) ;
-		  Terminal.print( data.startCode ) ;
-		  Terminal.print( data.byteCount ) ;
-		  Terminal.print( data.address ) ;
-		  Terminal.print( data.recordType ) ;
-		  Terminal.print( data.data ) ;
-		  Terminal.print( data.checkSum ) ;
+		  Terminal.println( "Now check all record data... " ) ;
+		  if( checkAllRecordData() == true )
+			  Terminal.println( "... Done. Checking record data successfull!" ) ;
 	  }
   }
   /* USER CODE END 3 */
@@ -193,6 +208,9 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+
+
+/*____________________________________________________________________________________________________________________________________________*/
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if( huart->Instance == USART1 )
 		Sim7600.irqProcess() ;
@@ -202,9 +220,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 
 
-Hex_record getRecord( int _dir ) {
-	static Hex_record record ;
-	record = {0,0,0,0,0,0,0} ;
+/*____________________________________________________________________________________________________________________________________________*/
+HFR_strTypeDef getStrRecord( int _dir ) {
+	static HFR_strTypeDef record ;
+	record = {0,0,0,0,0,0} ;
 
 	static unsigned int nowLocation = 0 ;
 	static unsigned int nextLocation = 0 ;
@@ -278,8 +297,14 @@ Hex_record getRecord( int _dir ) {
 	record.recordType[0] = str2[7] ;
 	record.recordType[1] = str2[8] ;
 
+	// Nếu record type mà bằng 0x01 => đã đến line cuối. Reset lại location, tránh bị lỗi data.
+	if( parseToHex( record.recordType[0], record.recordType[1] ) == 0x01 ) {
+		nowLocation = 0 ;
+		nextLocation = 0 ;
+	}
+
 	// get data
-	int data_len = parse_doubleOfChar( record.byteCount[0], record.byteCount[1] ) ;
+	int data_len = parseToHex( record.byteCount[0], record.byteCount[1] ) ;
 	for( int i = 0 ; i < data_len*2 ; i++ ) {
 		record.data[i] = str2[ i + 9 ] ;
 	}
@@ -292,7 +317,12 @@ Hex_record getRecord( int _dir ) {
 }
 
 
-uint8_t parse_doubleOfChar( char c0, char c1 ){
+
+/*____________________________________________________________________________________________________________________________________________*/
+/*
+ * parse from 2 character type 'A' and 'B' to 0xAB
+ */
+uint8_t parseToHex( char c0, char c1 ){
 	uint8_t result = 0x00 ;
     if ('0' <= c0 && c0 <= '9') result = c0 - '0';
     if ('a' <= c0 && c0 <= 'f') result = 10 + c0 - 'a';
@@ -307,6 +337,110 @@ uint8_t parse_doubleOfChar( char c0, char c1 ){
     return result ;
 
 }
+
+
+
+/*____________________________________________________________________________________________________________________________________________*/
+HFR_hexArrTypeDef parse_strToHexArrRecord( HFR_strTypeDef _strRecord ){
+	HFR_hexArrTypeDef result = { 0, 0, 0, 0, 0, 0 };
+	result = { 0, 0, 0, 0, 0, 0 };
+
+	// get start code
+	result.startCode[0]  = _strRecord.startCode[0] ;
+	// get byte count
+	result.byteCount[0]  = (uint8_t)parseToHex( _strRecord.byteCount[0], _strRecord.byteCount[1] ) ;
+	// get address
+	result.address[0]    = (uint8_t)parseToHex( _strRecord.address[0], _strRecord.address[1] ) ;
+	result.address[1]    = (uint8_t)parseToHex( _strRecord.address[2], _strRecord.address[3] ) ;
+	// get record type
+	result.recordType[0] = (uint8_t)parseToHex( _strRecord.recordType[0], _strRecord.recordType[1] ) ;
+	// get data
+	for( int i = 0; i < (int)result.byteCount[0]; i++ )
+		result.data[ i ] = (uint8_t)parseToHex( _strRecord.data[ i*2 ], _strRecord.data[ i*2 + 1 ] ) ;
+	// get checksum
+	result.checkSum[0]   = (uint8_t)parseToHex( _strRecord.checkSum[0], _strRecord.checkSum[1] ) ;
+
+	return result ;
+}
+
+
+
+/*____________________________________________________________________________________________________________________________________________*/
+int checkRecord( HFR_strTypeDef _strRecord ){
+	// Đầu tiên, cần convert record dạng string về dạng mảng hexa
+	HFR_hexArrTypeDef hexArrRecord = parse_strToHexArrRecord( _strRecord ) ;
+
+	uint8_t sum = 0x00 ;
+	sum += hexArrRecord.byteCount[0] ;
+	sum += hexArrRecord.address[0] ;
+	sum += hexArrRecord.address[1] ;
+	sum += hexArrRecord.recordType[0] ;
+	// Nếu bytecount = 0  thì nghĩa là đã tới cuối line record
+	if( hexArrRecord.recordType[0] == 0x01 ) return 2 ;
+
+	for( uint8_t i = 0; i < hexArrRecord.byteCount[0]; i++ )
+		sum += hexArrRecord.data[i] ;
+
+	sum = ~sum ;
+	sum = sum + 0x01 ;
+
+	if( sum == hexArrRecord.checkSum[0] )
+		return 1 ;
+	else
+		return 0 ;
+
+}
+
+
+
+bool checkAllRecordData() {
+	getStrRecord(0) ;
+	HFR_strTypeDef strRecord ;
+	int result = 1 ;
+	int lastTime = HAL_GetTick() ;
+	while(1) {
+		strRecord = getStrRecord(2) ;
+		result = checkRecord( strRecord ) ;
+		// nếu = 0 thì đã bị lỗi
+		if( result == 0 ) {
+			Terminal.println( "Record ERROR at line address: " ) ;
+			Terminal.print( strRecord.address ) ;
+			return false ;
+		// Kiểm tra record line cuối cùng ?
+		}else if( result == 2 )
+			break ;
+		// Còn nếu == 1 thì có nghĩa là record line này đã đúng, chuyển sang line mới
+		else if( result == 1 ) {
+//			Terminal.println( strRecord.startCode ) ;
+//			Terminal.print( strRecord.byteCount ) ;
+//			Terminal.print( strRecord.address ) ;
+//			Terminal.print( strRecord.recordType ) ;
+//			Terminal.print( strRecord.data ) ;
+//			Terminal.print( strRecord.checkSum ) ;
+//			Terminal.print( " -> TRUE" ) ;
+		}
+
+		if( HAL_GetTick() - lastTime >= 20 ) {
+			lastTime = HAL_GetTick() ;
+			HAL_GPIO_TogglePin( user_led_GPIO_Port, user_led_Pin ) ;
+		}
+	}
+	return true ;
+}
+
+
+
+/*____________________________________________________________________________________________________________________________________________*/
+bool writeRecordToFlash( HFR_strTypeDef _strRecord ){
+	bool result = true ;
+	// Đầu tiên, cần convert record dạng string về dạng mảng hexa
+	HFR_hexArrTypeDef dataArr = parse_strToHexArrRecord( _strRecord ) ;
+
+
+	return result ;
+}
+
+
 /* USER CODE END 4 */
 
 /**

@@ -6,4 +6,3 @@ Sim7600.cpp:26:6:void Sim7600::init()	16	static
 Sim7600.cpp:33:6:void Sim7600::irqProcess()	16	static
 Sim7600.cpp:45:6:void Sim7600::memreset()	16	static
 Sim7600.cpp:54:6:bool Sim7600::sendCmd(const char*, const char*, unsigned int)	56	dynamic
-Sim7600.cpp:83:9:std::string Sim7600::getRecord(unsigned int, unsigned int)	104	static

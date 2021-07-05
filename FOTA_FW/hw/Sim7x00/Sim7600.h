@@ -31,7 +31,6 @@ public:
 	void    irqProcess() ;
 	bool    sendCmd( const char* _cmd, const char* _expectedAnswer, unsigned int _timeout ) ;
 	void    memreset() ;
-	string  getRecord( unsigned int _start, unsigned int _end ) ;
 
 
 private:
