@@ -1,10 +1,10 @@
-17:13:00 **** Incremental Build of configuration Debug for project FOTA_FW ****
+09:54:13 **** Incremental Build of configuration Debug for project FOTA_FW ****
 make -j4 all 
 arm-none-eabi-size   FOTA_FW.elf 
    text	   data	    bss	    dec	    hex	filename
-  41968	    548	   1948	  44464	   adb0	FOTA_FW.elf
+  43304	    532	   1956	  45792	   b2e0	FOTA_FW.elf
 Finished building: default.size.stdout
  
 
-17:13:01 Build Finished. 0 errors, 0 warnings. (took 836ms)
+09:54:14 Build Finished. 0 errors, 0 warnings. (took 756ms)
 

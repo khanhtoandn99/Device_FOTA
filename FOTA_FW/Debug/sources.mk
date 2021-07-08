@@ -37,4 +37,5 @@ Drivers/STM32L4xx_HAL_Driver/Src \
 hw/Flash \
 hw/Sim7x00 \
 hw/Terminal \
+hw \
 

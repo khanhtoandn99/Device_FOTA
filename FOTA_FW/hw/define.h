@@ -20,7 +20,9 @@ enum field_byte_count {
 
 
 
-#define       FIRMWARE        "Bootloader_FW"
-#define       FIRMWARE_PATH   "E:/Bootloader_FW.hex"
+#define       FIRMWARE        "Blink100ms"
+
+#define       FIRMWARE_PATH   "E:/Blink100ms.bin"
+
 
 #endif /* DEFINE_H_ */

@@ -29,3 +29,4 @@
 "hw/Flash/L4Flash.o"
 "hw/Sim7x00/Sim7600.o"
 "hw/Terminal/Terminal.o"
+"hw/hexFile_functions.o"

@@ -12,6 +12,7 @@ RM := rm -rf
 -include hw/Terminal/subdir.mk
 -include hw/Sim7x00/subdir.mk
 -include hw/Flash/subdir.mk
+-include hw/subdir.mk
 -include Drivers/STM32L4xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
