@@ -137,15 +137,20 @@ int main(void)
 		  for( int i = 0; i <= 222; i++ ) {
 			  Flash_erase( 31 + i ) ;
 		  }
+
 		  Terminal.print( "Done.\nNow flashing... " ) ;
 		  if( CF_writeBFFWtoFlash() == true )
 			  Terminal.println( "...Flash successful!" ) ;
+		  else
+			  Terminal.println( "...Flash failed! Please try again!" ) ;
 
 		  for( int i = 0 ; i < 6 ; i++ ) {
 			  HAL_GPIO_TogglePin( user_led_GPIO_Port,  user_led_Pin ) ;
 			  HAL_Delay(500) ;
 		  }
 		  HAL_GPIO_WritePin( user_led_GPIO_Port,  user_led_Pin, (GPIO_PinState)0 ) ;
+		  Sim7600.sendCmd( "AT+CRESET", "", 100 ) ;
+		  HAL_NVIC_SystemReset() ;
 
 	  }
   }
@@ -250,10 +255,7 @@ BF_dWordHArrTypeDef CS_getDoubleWord( uint32_t _address ) {
 	// không thể dùng strstr "OK"để kiểm tra Sim7600.sendCmd đúng hay không được, vì gặp ký tự NULL ( 0x00 ) là nó dừng
 	// nhưng dữ liệu firmware của chúng ta chứa ký tự null là chuyện đương nhiên -> ko hợp lý . Nên chỉ gửi thôi, ko kiểm tra.
 
-//	if( Sim7600.sendCmd( cmd, "+CFTRANTX: 0", 5000 ) == false ) {
-//		Terminal.println( "Get SIM7600E data failed!" ) ;
-//		while(1) {} ;
-//	}
+	Sim7600.memreset() ;
 	Sim7600.sendCmd( cmd, "+CFTRANTX: DATA", 5000 ) ;
 	HAL_Delay(3) ;
 
@@ -284,6 +286,12 @@ BF_dWordHArrTypeDef CS_getDoubleWord( uint32_t _address ) {
 
 /*____________________________________________________________________________________________________________________________________________*/
 bool CF_writeBFFWtoFlash() {
+	// Before start
+	while( Sim7600.sendCmd( "AT", "OK", 100 ) == false )
+	  HAL_Delay( 2000 ) ;
+	Sim7600.sendCmd( "AT+FSCD=E:", "OK", 200 ) ;
+	Sim7600.sendCmd( "AT+CATR=1", "OK", 200 ) ;
+
 	bool result = false ;
 	uint32_t address = 0x00 ;
 	BF_dWordHArrTypeDef wDWord = { 0, 0 } ;
@@ -293,10 +301,15 @@ bool CF_writeBFFWtoFlash() {
 //		Terminal.println( "Get double word done!" ) ;
 
 		// Kiểm tra có phải đã đến data cuối cùng chưa ?
-		if( wDWord.isLastDWord == true ) {
+		if( ( wDWord.isLastDWord == true ) && ( address > 0x800 ) ) {
 			Flash_write_doubleWord( address + firmwareBaseAddress, (const uint8_t*)wDWord.data ) ;
 			result = true ;
 			break ;
+
+		// Trường hợp này là bị lỗi chớ k phải đã hoàn thành
+		}else if( ( wDWord.isLastDWord == true ) && ( address < 0x800 )  ){
+			break ;
+
 		// còn nếu chưa thì cứ tiếp tục
 		}else {
 			Flash_write_doubleWord( address + firmwareBaseAddress, (const uint8_t*)wDWord.data ) ;
