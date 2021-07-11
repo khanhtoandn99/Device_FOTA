@@ -37,19 +37,17 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define DATA_START_ADDRESS 		 	((uint32_t)0x0807F800)	//Page 257
-#define LENGTH_START_ADDRESS 		((uint32_t)0x0807F000)	//Page 256
+
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
 
-uint32_t diaChiFOTAFW = 0x08040000 ;
-uint32_t diaChiRunningFW = 0x08060000  ;
+uint32_t diaChiFOTAFW = 0x08019000 ;
+uint32_t diaChiRunningFW = 0x0803E800  ;
 int chooseFW = 0 ;
 
-uint64_t Rx_Data[2] ;
 
 /* USER CODE END PV */
 
@@ -58,11 +56,13 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) ;
 
-void checkAndjumptoNewFW() ;
+void checkAndjumptoNewFW( _Bool _ifHaveNewFW ) ;
 
 char *getCurrentVersion() ;
 
 char *getCheckVersion() ;
+
+_Bool checkFWnameFormat( char _character ) ;
 
 /* USER CODE END PFP */
 
@@ -107,58 +107,50 @@ int main(void)
   sim7600_init() ;
   terminal_init() ;
 
-  // 2. Tiếp theo, kiểm tra version hiện tại và version đang có trên server
-  // 2.1. Lấy dữ liệu version trên server
+  terminal_println( "----------------------------------------------------------------------------------------------------------------", 200 ) ;
+  terminal_println( "                                             BOOTLOADER FIRMWARE", 200 ) ;
+  terminal_println( "----------------------------------------------------------------------------------------------------------------", 200 ) ;
+  terminal_println( " " , 100 ) ;
 
-  // 2.2. Lấy dữ liệu hiện tại từ bộ nhớ FLASH
+  // 2. Tiếp theo, kiểm tra version hiện tại và version đang có trên module sim ( đã được tải về từ server )
+  // 2.1. Lấy dữ liệu version hiện tại từ bộ nhớ FLASH
 
-  Flash_erase(500) ;
+//  Flash_erase(500) ;
+//
+//  uint8_t x[20] = "datalogger_1.0.0.bin" ;
+//  Flash_write( 0x080FA000, x, strlen((char*)x) ) ;
 
-  uint8_t x[20] = "datalogger_1.0.0.bin" ;
-  Flash_write( 0x080FA000, x, strlen((char*)x) ) ;
-
-  // Lấy version hiện tại trong FLASH
+  terminal_println( "Checking on current version ... ", 200 ) ;
   char currentVersion[24] = {0} ;
-  memcpy( currentVersion, getCurrentVersion(), 24 ) ;
+  strcat( currentVersion, getCurrentVersion() ) ;
 
-  _Bool isHaveNewVersion = 0 ;
+  // 2.2. Lấy dữ liệu version trên module sim đồng thời kiểm tra
+  terminal_println( "Done.\nChecking cloud version ... ", 200 ) ;
+  _Bool ifHaveNewVersion = 0 ;
   // Lấy version trên module sim
-  if( strstr( getCheckVersion(), currentVersion ) == NULL )
-	  // Nghĩa là đã có version mới
-	  isHaveNewVersion = 1 ;
+  char checkedVersion[24] = {0} ;
+  memcpy( checkedVersion, getCheckVersion(), 24 ) ;
+  if( strstr( checkedVersion, currentVersion ) == NULL )
+	  ifHaveNewVersion = 1 ;
   else
-	  isHaveNewVersion = 0 ;
+	  ifHaveNewVersion = 0 ;
 
 
-  if( isHaveNewVersion == 1) {
+  // Nghĩa là đã có version mới
+  if( ifHaveNewVersion == 1) {
 	  terminal_println( "There is new version: ", 200 ) ;
   	  terminal_print( getCheckVersion(), 200 ) ;
   	  terminal_println( "Going to FOTA", 200 ) ;
-  }else
-	  terminal_println( "Version is up to date.", 200 ) ;
+  // Nếu không có version mới
+  }else {
+	  terminal_println( "Application version is up to date.\n", 200 ) ;
+	  terminal_println( "Going to Datalogger application firmware ...", 200 ) ;
+  }
 
-
-
-
-
-
-
-
-
-//  // Giả sử ta check có 1 firmware mới, ta bắt đầu nhảy vào chương trình FOTA
-//  char info[ 150 ] = "Please choose 1 of these 2 Firmwares you would like to start:\n1. FOTA Firmware\n2. Running Firmware\n\n>>\r\n" ;
-//  terminal_println( (uint8_t*)info, 2000 ) ;
-//  while( chooseFW == 0 ) {
-//	  if( terminal_available() ){
-//		  if( strstr( terminal_read() , "GOTO_FOTAFW") != NULL )
-//			  chooseFW = 1 ;
-//		  else if( strstr( terminal_read(), "GOTO_RUNNINGFW" ) != NULL )
-//			  chooseFW = 2 ;
-//	  }
-//  }
-//  terminal_memreset() ;
-//
-//  checkAndjumptoNewFW() ;
+  // Kiểm tra và đưa ra quyết định chương trình tiếp theo sẽ nhảy vào là chương trình nào tại hàm này
+  terminal_println( "Click Blue button to continue!", 200 ) ;
+  while( HAL_GPIO_ReadPin(user_button_GPIO_Port, user_button_Pin) == 1 ) {}
+  checkAndjumptoNewFW( ifHaveNewVersion ) ;
 
   /* USER CODE END 2 */
 
@@ -169,6 +161,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
   }
   /* USER CODE END 3 */
 }
@@ -235,9 +228,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 
 /*__________________________________________________________________________________________________________________________________________*/
-void checkAndjumptoNewFW() {
-	if ( chooseFW == 1 ) {
-	  HAL_UART_Transmit( &TERMINAL_TXRX, (uint8_t*)"GOTO_FOTAFW\nOK", strlen( "GOTO_FOTAFW\nOK" ), 2000 ) ;
+void checkAndjumptoNewFW( _Bool _ifHaveNewFW ) {
+	if ( _ifHaveNewFW == 1 ) {
 	  HAL_RCC_DeInit() ;
 	  HAL_DeInit() ;
 	  SCB->SHCSR &= ~( SCB_SHCSR_USGFAULTENA_Msk || SCB_SHCSR_BUSFAULTENA_Msk || SCB_SHCSR_MEMFAULTENA_Msk ) ;
@@ -247,8 +239,7 @@ void checkAndjumptoNewFW() {
 	  void (*reset_handler)(void) = (void*)JumpAddress;
 	  reset_handler();
 
-	} else if ( chooseFW == 2 ) {
-	  HAL_UART_Transmit( &TERMINAL_TXRX, (uint8_t*)"GOTO_RUNNINGFW\nOK", strlen( "GOTO_RUNNINGFW\nOK" ), 2000 ) ;
+	} else if ( _ifHaveNewFW == 0 ) {
 	  HAL_RCC_DeInit() ;
 	  HAL_DeInit() ;
 	  SCB->SHCSR &= ~( SCB_SHCSR_USGFAULTENA_Msk || SCB_SHCSR_BUSFAULTENA_Msk || SCB_SHCSR_MEMFAULTENA_Msk ) ;
@@ -279,16 +270,16 @@ char *getCurrentVersion() {
 	for( int i = 0 ; i < 8 ; i++ )
 		version[i] = firstDW[i] ;
 	for( int i = 0 ; i < 8 ; i++ ) {
-		if( secondDW[i] == 0xFF || secondDW[i] == 0x00 )
-			version[ i + 8 ] = 0x00 ;
-		else
+		if( checkFWnameFormat( (char)secondDW[i] ) == 1 )
 			version[ i + 8 ] = secondDW[i] ;
+		else
+			version[ i + 8 ] = 0x00 ;
 	}
 	for( int i = 0 ; i < 8 ; i++ ) {
-		if( thirdDW[i] == 0xFF || thirdDW[i] == 0x00 )
-			version[ i + 16 ] = 0x00 ;
-		else
+		if( checkFWnameFormat( thirdDW[i] ) == 1 )
 			version[ i + 16 ] = thirdDW[i] ;
+		else
+			version[ i + 16 ] = 0x00 ;
 	}
 
 	return version ;
@@ -302,16 +293,56 @@ char *getCheckVersion() {
 	static char version[24] ;
 	memset( version, 0 , 24 ) ;
 
-	sim7600_sendCmd( "AT+FSCD=E:", "OK", 200 ) ;
-	sim7600_sendCmd( "AT+FSLS", "OK", 200 ) ;
+	sim7600_sendCmd( "AT+FSCD=E:\r", "OK", 2000 ) ;
+	sim7600_sendCmd( "AT+FSLS\r", "OK", 2000 ) ;
 
-	memcpy( version, strstr( sim7600_read(), "datalogger:" ), 24 ) ;
+	HAL_Delay(100) ;
+	memcpy( version, strstr( sim7600_read(), "datalogger" ), 24 ) ;
 
 	return version ;
 }
 
 
 
+/*__________________________________________________________________________________________________________________________________________*/
+// datalogger_1.1.1.bin => d,a,t,l,o,g,e,r,b,i,n,_,.,'number'
+_Bool checkFWnameFormat( char _character ) {
+	switch ( _character ) {
+		case 'd':
+			return 1 ;
+		case 'a':
+			return 1 ;
+		case 't':
+			return 1 ;
+		case 'l':
+			return 1 ;
+		case 'o':
+			return 1 ;
+		case 'g':
+			return 1 ;
+		case (char)'e':
+			return 1 ;
+		case 'r':
+			return 1 ;
+		case 'b':
+			return 1 ;
+		case 'i':
+			return 1 ;
+		case 'n':
+			return 1 ;
+		case '_':
+			return 1 ;
+		case '.':
+			return 1 ;
+
+		default:
+			if( ( _character >= 0x30 && _character <= 0x39 ) )
+				return 1 ;
+			else
+				return 0 ;
+			break;
+	}
+}
 
 /* USER CODE END 4 */
 

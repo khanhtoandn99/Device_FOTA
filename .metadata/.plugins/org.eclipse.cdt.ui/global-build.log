@@ -1,20 +1,27 @@
-15:26:40 **** Incremental Build of configuration Debug for project FOTA_FW ****
+18:06:19 **** Incremental Build of configuration Debug for project Bootloader_FW ****
 make -j4 all 
-arm-none-eabi-g++ "../Core/Src/main.cpp" -mcpu=cortex-m4 -std=gnu++14 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L476xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -I"D:/CODE ARM/NUCLEO-STM32L476RG/FOTA_Project/FOTA_FW/hw/Flash" -I"D:/CODE ARM/NUCLEO-STM32L476RG/FOTA_Project/FOTA_FW/hw/Sim7x00" -I"D:/CODE ARM/NUCLEO-STM32L476RG/FOTA_Project/FOTA_FW/hw/Terminal" -I"D:/CODE ARM/NUCLEO-STM32L476RG/FOTA_Project/FOTA_FW/hw" -O0 -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti -fno-use-cxa-atexit -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-arm-none-eabi-g++ -o "FOTA_FW.elf" @"objects.list"   -mcpu=cortex-m4 -T"D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\FOTA_FW\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="FOTA_FW.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
-Finished building target: FOTA_FW.elf
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L476xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -I"D:/CODE ARM/NUCLEO-STM32L476RG/FOTA_Project/Bootloader_FW/hw" -I"D:/CODE ARM/NUCLEO-STM32L476RG/FOTA_Project/Bootloader_FW/hw/Sim7x00" -I"D:/CODE ARM/NUCLEO-STM32L476RG/FOTA_Project/Bootloader_FW/hw/Terminal" -I"D:/CODE ARM/NUCLEO-STM32L476RG/FOTA_Project/Bootloader_FW/hw/Flash" -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-g++ -o "Bootloader_FW.elf" @"objects.list"   -mcpu=cortex-m4 -T"D:\CODE ARM\NUCLEO-STM32L476RG\FOTA_Project\Bootloader_FW\STM32L476RGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Bootloader_FW.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+Finished building target: Bootloader_FW.elf
  
-arm-none-eabi-objdump -h -S  FOTA_FW.elf  > "FOTA_FW.list"
-arm-none-eabi-objcopy  -O ihex  FOTA_FW.elf  "FOTA_FW.hex"
-arm-none-eabi-objcopy  -O binary  FOTA_FW.elf  "FOTA_FW.bin"
-arm-none-eabi-size   FOTA_FW.elf 
+arm-none-eabi-objdump -h -S  Bootloader_FW.elf  > "Bootloader_FW.list"
+arm-none-eabi-objcopy  -O ihex  Bootloader_FW.elf  "Bootloader_FW.hex"
+arm-none-eabi-objcopy  -O binary  Bootloader_FW.elf  "Bootloader_FW.bin"
+arm-none-eabi-size   Bootloader_FW.elf 
    text	   data	    bss	    dec	    hex	filename
-  43552	    532	   1956	  46040	   b3d8	FOTA_FW.elf
+  41276	    496	   4944	  46716	   b67c	Bootloader_FW.elf
 Finished building: default.size.stdout
  
-Finished building: FOTA_FW.bin
-Finished building: FOTA_FW.hex
+Finished building: Bootloader_FW.hex
+Finished building: Bootloader_FW.bin
  
  
-Finished building: FOTA_FW.list
+Finished building: Bootloader_FW.list
+ 
+18:06:24 **** Incremental Build of configuration Debug for project Bootloader_FW ****
+make -j4 all 
+arm-none-eabi-size   Bootloader_FW.elf 
+   text	   data	    bss	    dec	    hex	filename
+  41276	    496	   4944	  46716	   b67c	Bootloader_FW.elf
+Finished building: default.size.stdout
  

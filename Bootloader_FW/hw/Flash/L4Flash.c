@@ -104,7 +104,7 @@ char* Flash_read_doubleWord( uint64_t _Address ) {
 	*data = *(__IO uint64_t *)_Address ;
 
 	for( int i = 0; i < 8; i++ ){
-		temp[i] &= data[0] ;
+		temp[i] = data[0] ;
 		data[0] >>= 8 ;
 	}
 

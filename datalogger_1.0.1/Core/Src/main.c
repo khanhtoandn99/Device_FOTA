@@ -93,12 +93,13 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  HAL_UART_Transmit(&huart2, (uint8_t*)"This is datalogger_1.0.1 firmware version.", strlen("This is datalogger_1.0.1 firmware version."), 200 ) ;
+  HAL_UART_Transmit(&huart2, (uint8_t*)"\nThis is datalogger_1.0.1 firmware version", strlen("\nThis is datalogger_1.0.1 firmware version"), 2000 ) ;
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  unsigned int lastTime = HAL_GetTick() ;
   while (1)
   {
     /* USER CODE END WHILE */
@@ -106,6 +107,11 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  HAL_GPIO_TogglePin(user_led_GPIO_Port, user_led_Pin) ;
 	  HAL_Delay(1000) ;
+
+	  if( (unsigned int)( HAL_GetTick() - lastTime ) >= 2000 ) {
+		  lastTime = HAL_GetTick() ;
+		  HAL_UART_Transmit(&huart2, (uint8_t*)"\nThis is datalogger_1.0.1 firmware version", strlen("\nThis is datalogger_1.0.1 firmware version"), 2000 ) ;
+	  }
   }
   /* USER CODE END 3 */
 }
