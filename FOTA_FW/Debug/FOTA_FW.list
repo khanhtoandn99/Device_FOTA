@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  00020204  2**0
                   CONTENTS, READONLY
- 12 .debug_info   000249b8  00000000  00000000  00020234  2**0
+ 12 .debug_info   000249a2  00000000  00000000  00020234  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 000043e4  00000000  00000000  00044bec  2**0
+ 13 .debug_abbrev 000043ca  00000000  00000000  00044bd6  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000ce8  00000000  00000000  00048fd0  2**3
+ 14 .debug_aranges 00000ce0  00000000  00000000  00048fa0  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 00000bb0  00000000  00000000  00049cb8  2**3
+ 15 .debug_ranges 00000ba8  00000000  00000000  00049c80  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  0002bdd5  00000000  00000000  0004a868  2**0
+ 16 .debug_macro  0002bdd5  00000000  00000000  0004a828  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00012a01  00000000  00000000  0007663d  2**0
+ 17 .debug_line   000129eb  00000000  00000000  000765fd  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000f9026  00000000  00000000  0008903e  2**0
+ 18 .debug_str    000f9001  00000000  00000000  00088fe8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000053  00000000  00000000  00182064  2**0
+ 19 .comment      00000053  00000000  00000000  00181fe9  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00005b98  00000000  00000000  001820b8  2**2
+ 20 .debug_frame  00005b78  00000000  00000000  0018203c  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -2221,7 +2221,7 @@ bool CF_writeBFFWtoFlash() {
  80015f8:	6a3b      	ldr	r3, [r7, #32]
  80015fa:	f5b3 6f00 	cmp.w	r3, #2048	; 0x800
  80015fe:	d90e      	bls.n	800161e <_Z19CF_writeBFFWtoFlashv+0xaa>
-			Flash_write_doubleWord( address + firmwareBaseAddress, (const uint8_t*)wDWord.data ) ;
+			Flash_write_doubleWord( address + appFW_BaseAddress, (const uint8_t*)wDWord.data ) ;
  8001600:	4b4d      	ldr	r3, [pc, #308]	; (8001738 <_Z19CF_writeBFFWtoFlashv+0x1c4>)
  8001602:	681a      	ldr	r2, [r3, #0]
  8001604:	6a3b      	ldr	r3, [r7, #32]
@@ -2249,7 +2249,7 @@ bool CF_writeBFFWtoFlash() {
 
 		// còn nếu chưa thì cứ tiếp tục
 		}else {
-			Flash_write_doubleWord( address + firmwareBaseAddress, (const uint8_t*)wDWord.data ) ;
+			Flash_write_doubleWord( address + appFW_BaseAddress, (const uint8_t*)wDWord.data ) ;
  800162c:	4b42      	ldr	r3, [pc, #264]	; (8001738 <_Z19CF_writeBFFWtoFlashv+0x1c4>)
  800162e:	681a      	ldr	r2, [r3, #0]
  8001630:	6a3b      	ldr	r3, [r7, #32]
@@ -13277,8 +13277,8 @@ __weak void HAL_UARTEx_WakeupCallback(UART_HandleTypeDef *huart)
  800528a:	4770      	bx	lr
 
 0800528c <_Z11Flash_erasem>:
-}
 
+#include <hw.h>
 
 
 /*_________________________________________________________________________________________________________________________________*/

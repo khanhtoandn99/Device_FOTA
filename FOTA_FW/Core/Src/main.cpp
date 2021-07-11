@@ -51,7 +51,7 @@ using namespace std;
 Sim7600 Sim7600( &huart1 ) ;
 Terminal Terminal( &huart2 ) ;
 
-uint32_t firmwareBaseAddress = 0x08010000 ;
+uint32_t appFW_BaseAddress = 0x0803E800; ;
 
 struct BF_dWordHArrTypeDef {
 	bool isLastDWord = false ;
@@ -302,7 +302,7 @@ bool CF_writeBFFWtoFlash() {
 
 		// Kiểm tra có phải đã đến data cuối cùng chưa ?
 		if( ( wDWord.isLastDWord == true ) && ( address > 0x800 ) ) {
-			Flash_write_doubleWord( address + firmwareBaseAddress, (const uint8_t*)wDWord.data ) ;
+			Flash_write_doubleWord( address + appFW_BaseAddress, (const uint8_t*)wDWord.data ) ;
 			result = true ;
 			break ;
 
@@ -312,7 +312,7 @@ bool CF_writeBFFWtoFlash() {
 
 		// còn nếu chưa thì cứ tiếp tục
 		}else {
-			Flash_write_doubleWord( address + firmwareBaseAddress, (const uint8_t*)wDWord.data ) ;
+			Flash_write_doubleWord( address + appFW_BaseAddress, (const uint8_t*)wDWord.data ) ;
 			address += 0x08 ;
 		}
 //		Terminal.println( "Write to flash done!" ) ;

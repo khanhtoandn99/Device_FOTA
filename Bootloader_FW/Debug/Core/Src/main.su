@@ -1,5 +1,7 @@
-main.c:73:5:main	72	static
-main.c:164:6:SystemClock_Config	232	static
-main.c:211:6:HAL_UART_RxCpltCallback	16	static
-main.c:220:6:checkAndjumptoNewFW	32	static,ignoring_inline_asm
-main.c:252:6:Error_Handler	4	static,ignoring_inline_asm
+main.c:78:5:main	64	static
+main.c:180:6:SystemClock_Config	232	static
+main.c:228:6:HAL_UART_RxCpltCallback	16	static
+main.c:238:6:checkAndjumptoNewFW	32	static,ignoring_inline_asm
+main.c:267:7:getCurrentVersion	48	static
+main.c:300:7:getCheckVersion	16	static
+main.c:322:6:Error_Handler	4	static,ignoring_inline_asm

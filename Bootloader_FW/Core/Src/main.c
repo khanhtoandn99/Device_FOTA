@@ -57,7 +57,12 @@ uint64_t Rx_Data[2] ;
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) ;
+
 void checkAndjumptoNewFW() ;
+
+char *getCurrentVersion() ;
+
+char *getCheckVersion() ;
 
 /* USER CODE END PFP */
 
@@ -107,21 +112,33 @@ int main(void)
 
   // 2.2. Lấy dữ liệu hiện tại từ bộ nhớ FLASH
 
-  Flash_erase( 255 ) ;
+  Flash_erase(500) ;
 
-  // 008001209D160008691200086F120008
+  uint8_t x[20] = "datalogger_1.0.0.bin" ;
+  Flash_write( 0x080FA000, x, strlen((char*)x) ) ;
 
-  Flash_write_str( 0x0807F800, "008001209D160008691200086F120008" ) ;
+  // Lấy version hiện tại trong FLASH
+  char currentVersion[24] = {0} ;
+  memcpy( currentVersion, getCurrentVersion(), 24 ) ;
 
-  // read flash
+  _Bool isHaveNewVersion = 0 ;
+  // Lấy version trên module sim
+  if( strstr( getCheckVersion(), currentVersion ) == NULL )
+	  // Nghĩa là đã có version mới
+	  isHaveNewVersion = 1 ;
+  else
+	  isHaveNewVersion = 0 ;
 
-//  terminal_println( Flash_read_doubleWord( 0x0807F800 ), 2000 ) ;
-//  terminal_print( Flash_read_doubleWord( 0x0807F808 ), 2000 ) ;
 
-  char rx[ 0x0807F818 - 0x0807F800 ] ;
-  memset( rx, 0, 0x0807F818 - 0x0807F800 ) ;
-  Flash_read_str( 0x0807F800, 0x0807F818, rx ) ;
-  terminal_println( (const char*)rx, 2000 ) ;
+  if( isHaveNewVersion == 1) {
+	  terminal_println( "There is new version: ", 200 ) ;
+  	  terminal_print( getCheckVersion(), 200 ) ;
+  	  terminal_println( "Going to FOTA", 200 ) ;
+  }else
+	  terminal_println( "Version is up to date.", 200 ) ;
+
+
+
 
 
 
@@ -207,6 +224,7 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+/*__________________________________________________________________________________________________________________________________________*/
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if( huart->Instance == USART1 )
 		sim7600_irqProcess() ;
@@ -216,6 +234,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 
 
+/*__________________________________________________________________________________________________________________________________________*/
 void checkAndjumptoNewFW() {
 	if ( chooseFW == 1 ) {
 	  HAL_UART_Transmit( &TERMINAL_TXRX, (uint8_t*)"GOTO_FOTAFW\nOK", strlen( "GOTO_FOTAFW\nOK" ), 2000 ) ;
@@ -241,6 +260,58 @@ void checkAndjumptoNewFW() {
 
 	}
 }
+
+
+
+/*__________________________________________________________________________________________________________________________________________*/
+char *getCurrentVersion() {
+	// version: 1.0.0FF
+	static char version[24] ;
+	memset( version, 0 , 24 ) ;
+
+	char firstDW[8] = {0} ;
+	char secondDW[8] = {0} ;
+	char thirdDW[8] = {0} ;
+	memcpy( firstDW, Flash_read_doubleWord(0x080FA000), 8 ) ;
+	memcpy( secondDW, Flash_read_doubleWord(0x080FA008), 8 ) ;
+	memcpy( thirdDW, Flash_read_doubleWord(0x080FA010), 8 ) ;
+
+	for( int i = 0 ; i < 8 ; i++ )
+		version[i] = firstDW[i] ;
+	for( int i = 0 ; i < 8 ; i++ ) {
+		if( secondDW[i] == 0xFF || secondDW[i] == 0x00 )
+			version[ i + 8 ] = 0x00 ;
+		else
+			version[ i + 8 ] = secondDW[i] ;
+	}
+	for( int i = 0 ; i < 8 ; i++ ) {
+		if( thirdDW[i] == 0xFF || thirdDW[i] == 0x00 )
+			version[ i + 16 ] = 0x00 ;
+		else
+			version[ i + 16 ] = thirdDW[i] ;
+	}
+
+	return version ;
+}
+
+
+
+/*__________________________________________________________________________________________________________________________________________*/
+char *getCheckVersion() {
+	// version: 1.0.0FF
+	static char version[24] ;
+	memset( version, 0 , 24 ) ;
+
+	sim7600_sendCmd( "AT+FSCD=E:", "OK", 200 ) ;
+	sim7600_sendCmd( "AT+FSLS", "OK", 200 ) ;
+
+	memcpy( version, strstr( sim7600_read(), "datalogger:" ), 24 ) ;
+
+	return version ;
+}
+
+
+
 
 /* USER CODE END 4 */
 
