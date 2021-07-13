@@ -6530,3 +6530,17 @@ java.util.ConcurrentModificationException
 2021-07-13 16:33:04,043 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] Managed Build system manifest file error: Could not load icon "icons/chip.png".
 2021-07-13 16:33:04,047 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] Managed Build system manifest file error: Could not load icon "icons/chip.png".
 2021-07-13 16:33:04,050 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] Managed Build system manifest file error: Could not load icon "icons/chip.png".
+2021-07-13 16:49:46,101 [INFO] Activator:170 - 
+
+
+2021-07-13 16:49:46,105 [INFO] Activator:171 - !SESSION log4j initialized
+2021-07-13 16:49:48,340 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] Managed Build system manifest file error: Could not load icon "icons/chip.png".
+2021-07-13 16:49:48,344 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] Managed Build system manifest file error: Could not load icon "icons/chip.png".
+2021-07-13 16:49:48,349 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] Managed Build system manifest file error: Could not load icon "icons/chip.png".
+2021-07-13 21:38:32,974 [INFO] Activator:170 - 
+
+
+2021-07-13 21:38:32,979 [INFO] Activator:171 - !SESSION log4j initialized
+2021-07-13 21:38:34,574 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] Managed Build system manifest file error: Could not load icon "icons/chip.png".
+2021-07-13 21:38:34,578 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] Managed Build system manifest file error: Could not load icon "icons/chip.png".
+2021-07-13 21:38:34,582 [ERROR] LogOutputStream:74 - [STDERR_REDIRECT] Managed Build system manifest file error: Could not load icon "icons/chip.png".

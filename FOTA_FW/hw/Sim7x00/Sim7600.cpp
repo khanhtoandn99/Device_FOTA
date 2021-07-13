@@ -74,7 +74,7 @@ bool Sim7600::sendCmd( const char* _cmd, const char* _expectedAnswer, unsigned i
 			answer = 1;
 	}
 
-    HAL_Delay(1) ;
+    HAL_Delay(10) ;
     return answer;
 }
 

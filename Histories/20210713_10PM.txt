@@ -1,0 +1,76 @@
+----------------------------------------------------------------------------------------------------------------
+                                             BOOTLOADER FIRMWARE
+----------------------------------------------------------------------------------------------------------------
+Booting ... 
+-> @sim7600e: AT+CRESET
+
+
+Checking on current version ... 
+Current version: ÿÿÿÿÿÿÿÿ Done.
+Checking cloud version ... 
+-> @sim7600e: AT+FSCD=E:
+AT+FSCD=E:
++FSCD: E:/
+
+OK
+
+-> @sim7600e: AT+FSLS
+AT+FSLS
++FSLS: FILES:
+datalogger_1.0.1.bin
+
+OK
+
+***There is new version: datalogger_1.0.1.bin
+Going to FOTA
+Click Blue button to continue!
+Jumping... 
+----------------------------------------------------------------------------------------------------------------
+                                             FIRMWARE OVER THE AIR UPDATE
+----------------------------------------------------------------------------------------------------------------
+Booting on...
+Please wait for 30 second !
+Checking...
+*New program version detected!
+Page ereasing... Done.
+Now flashing... 
+...10%...
+...20%...
+...30%...
+...40%...
+...50%...
+...60%...
+...70%...
+...80%...
+...90%...
+...100%... Done.
+...Flash successful!
+Saving... Done
+----------------------------------------------------------------------------------------------------------------
+                                             BOOTLOADER FIRMWARE
+----------------------------------------------------------------------------------------------------------------
+Booting ... 
+-> @sim7600e: AT+CRESET
+
+
+Checking on current version ... 
+Current version: datalogger_1.0.1.bin Done.
+Checking cloud version ... 
+-> @sim7600e: AT+FSCD=E:
+AT+FSCD=E:
++FSCD: E:/
+
+OK
+
+-> @sim7600e: AT+FSLS
+AT+FSLS
++FSLS: FILES:
+datalogger_1.0.1.bin
+
+OK
+
+Application version is up to date.
+
+Going to Datalogger application firmware ...
+Click Blue button to continue!
+Jumping... 

@@ -53,6 +53,8 @@ Terminal Terminal( &huart2 ) ;
 
 uint32_t appFW_BaseAddress = 0x0803E800;
 
+static char newAppFW_name[24] = {0} ;
+
 struct BF_dWordHArrTypeDef {
 	bool isLastDWord = false ;
 	uint8_t data[8] = {0} ;
@@ -125,6 +127,12 @@ int main(void)
 
   Sim7600.sendCmd( "AT+CRESET", "", 200 ) ;
   HAL_Delay(30000) ;
+
+//	Flash_erase(500) ;
+//	HAL_Delay(1000) ;
+//	uint8_t x[24] = "datalogger_1.0.0.bin" ;
+//	Flash_write( 0x080FA000, x, strlen((char*)x) ) ;
+
   Sim7600.sendCmd( "AT", "OK", 200 ) ;
   Sim7600.sendCmd( "AT+FSCD=E:", "OK", 200 ) ;
   Sim7600.sendCmd( "AT+CATR=1", "OK", 200 ) ;
@@ -292,17 +300,14 @@ BF_dWordHArrTypeDef CS_getDoubleWord( uint32_t _address ) {
 	memset( result.data, 0x00, 8 ) ;
 
 	// Tạo câu lệnh CMD để lấy dữ liệu recode thứ location
-	static char fwName[25] = {0} ;
-	memcpy( fwName, getOnSimVersion(), 24 ) ;
-
-	char cmd[ strlen( fwName ) + 30 ] = {0} ;
-	sprintf( cmd, "AT+CFTRANTX=\"E:/%s\",%lu,8\r\n", fwName, _address ) ;
+	char cmd[ strlen( newAppFW_name ) + 30 ] = {0} ;
+	sprintf( cmd, "AT+CFTRANTX=\"E:/%s\",%lu,8\r\n", newAppFW_name, _address ) ;
 	// không thể dùng strstr "OK"để kiểm tra Sim7600.sendCmd đúng hay không được, vì gặp ký tự NULL ( 0x00 ) là nó dừng
 	// nhưng dữ liệu firmware của chúng ta chứa ký tự null là chuyện đương nhiên -> ko hợp lý . Nên chỉ gửi thôi, ko kiểm tra.
 	Sim7600.sendCmd( cmd, "+CFTRANTX: DATA", 5000 ) ;
 
-	char dataZone[100] = {0} ;
-	memcpy( dataZone, strstr( Sim7600.rxData.c_str(), "DATA" ), 75 ) ;
+	char dataZone[36] = {0} ;
+	memcpy( dataZone, strstr( Sim7600.rxData.c_str(), "DATA" ), 35 ) ;
 
 	// Check if is last double word of .bin file
 	uint8_t restNbData = parseToHex( dataZone[6], dataZone[7] ) ;
@@ -329,8 +334,13 @@ BF_dWordHArrTypeDef CS_getDoubleWord( uint32_t _address ) {
 /*____________________________________________________________________________________________________________________________________________*/
 bool CF_writeBFFWtoFlash( uint32_t _baseAddress ) {
 	// Before start
-	while( Sim7600.sendCmd( "AT", "OK", 100 ) == false )
-	  HAL_Delay( 2000 ) ;
+	Sim7600.sendCmd( "AT", "OK", 200 ) ;
+	Sim7600.sendCmd( "AT+FSCD=E:", "OK", 200 ) ;
+	Sim7600.sendCmd( "AT+CATR=1", "OK", 200 ) ;
+	Sim7600.memreset() ;
+
+	memset( newAppFW_name, 0, 25 ) ;
+	memcpy( newAppFW_name, getOnSimVersion(), 24 ) ;
 
 	bool result = false ;
 	uint32_t address = 0x00 ;
@@ -338,8 +348,7 @@ bool CF_writeBFFWtoFlash( uint32_t _baseAddress ) {
 	while(1) {
 		// Lấy double word
 		wDWord = CS_getDoubleWord( address ) ;
-		HAL_Delay(10) ;
-//		Terminal.println( "Get double word done!" ) ;
+		HAL_GPIO_TogglePin( user_led_GPIO_Port, user_led_Pin ) ;
 
 		// Kiểm tra có phải đã đến data cuối cùng chưa ?
 		if( ( wDWord.isLastDWord == true ) && ( address > 0x800 ) ) {
@@ -356,8 +365,8 @@ bool CF_writeBFFWtoFlash( uint32_t _baseAddress ) {
 			Flash_write_doubleWord( address + _baseAddress, (const uint8_t*)wDWord.data ) ;
 			address += 0x08 ;
 		}
-//		Terminal.println( "Write to flash done!" ) ;
 
+		HAL_GPIO_TogglePin( user_led_GPIO_Port, user_led_Pin ) ;
 		// Debug
 		if( address == 0x0C60 )
 			Terminal.println( "...10%..." ) ;
