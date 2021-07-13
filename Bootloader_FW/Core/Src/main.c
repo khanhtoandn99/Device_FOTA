@@ -37,7 +37,8 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#define true 1
+#define false 0
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -60,7 +61,7 @@ void checkAndjumptoNewFW( _Bool _ifHaveNewFW ) ;
 
 char *getCurrentVersion() ;
 
-char *getCheckVersion() ;
+char *getOnSimVersion() ;
 
 _Bool checkFWnameFormat( char _character ) ;
 
@@ -110,46 +111,66 @@ int main(void)
   terminal_println( "----------------------------------------------------------------------------------------------------------------", 200 ) ;
   terminal_println( "                                             BOOTLOADER FIRMWARE", 200 ) ;
   terminal_println( "----------------------------------------------------------------------------------------------------------------", 200 ) ;
-  terminal_println( " " , 100 ) ;
-
+  terminal_println( "Booting ... ", 200 ) ;
   // 2. Tiếp theo, kiểm tra version hiện tại và version đang có trên module sim ( đã được tải về từ server )
   // 2.1. Lấy dữ liệu version hiện tại từ bộ nhớ FLASH
 
 //  Flash_erase(500) ;
-//
-//  uint8_t x[20] = "datalogger_1.0.0.bin" ;
+//  HAL_Delay(1000) ;
+//  uint8_t x[24] = "datalogger_1.0.0.bin" ;
 //  Flash_write( 0x080FA000, x, strlen((char*)x) ) ;
+//  while(1){}
+
+  sim7600_sendCmd( "AT+CRESET\r", "", 1000 ) ;
+  HAL_Delay(30000) ;
 
   terminal_println( "Checking on current version ... ", 200 ) ;
   char currentVersion[24] = {0} ;
   strcat( currentVersion, getCurrentVersion() ) ;
 
+  terminal_println( "Current version: ", 2000 ) ;
+  terminal_print( currentVersion, 2000 ) ;
+  terminal_print( " Done.", 2000 ) ;
+
   // 2.2. Lấy dữ liệu version trên module sim đồng thời kiểm tra
-  terminal_println( "Done.\nChecking cloud version ... ", 200 ) ;
-  _Bool ifHaveNewVersion = 0 ;
+  terminal_println( "Checking cloud version ... ", 200 ) ;
+  _Bool ifHaveNewVersion = false ;
   // Lấy version trên module sim
-  char checkedVersion[24] = {0} ;
-  memcpy( checkedVersion, getCheckVersion(), 24 ) ;
-  if( strstr( checkedVersion, currentVersion ) == NULL )
-	  ifHaveNewVersion = 1 ;
-  else
-	  ifHaveNewVersion = 0 ;
+  char onSimVersion[24] = {0} ;
+  memcpy( onSimVersion, getOnSimVersion(), 24 ) ;
+  // Đầu tiên check xem có file nào có chữ "datalogger" không đã
+  if( strstr( onSimVersion, "datalogger" ) != NULL ) {
+	  // Nếu có file datalogger và detect = 0, Nghĩa là đã có version mới
 
+	  if( strstr( onSimVersion, currentVersion ) == NULL )
+		  ifHaveNewVersion = true ;
 
-  // Nghĩa là đã có version mới
-  if( ifHaveNewVersion == 1) {
-	  terminal_println( "There is new version: ", 200 ) ;
-  	  terminal_print( getCheckVersion(), 200 ) ;
-  	  terminal_println( "Going to FOTA", 200 ) ;
-  // Nếu không có version mới
+	  if( ifHaveNewVersion == true ) {
+		  terminal_println( "***There is new version: ", 200 ) ;
+	  	  terminal_print( onSimVersion, 200 ) ;
+	  	  terminal_println( "Going to FOTA", 200 ) ;
+		  ifHaveNewVersion = true ;
+	  // Nếu không có version mới
+	  }else {
+		  terminal_println( "Application version is up to date.\n", 200 ) ;
+		  terminal_println( "Going to Datalogger application firmware ...", 200 ) ;
+		  ifHaveNewVersion = false ;
+	  }
+  // Đã bị lỗi mất file firmware
   }else {
-	  terminal_println( "Application version is up to date.\n", 200 ) ;
+	  terminal_println( "ERROR!!! Firmware file not found!", 200 ) ;
 	  terminal_println( "Going to Datalogger application firmware ...", 200 ) ;
+	  ifHaveNewVersion = false ;
   }
+
+
 
   // Kiểm tra và đưa ra quyết định chương trình tiếp theo sẽ nhảy vào là chương trình nào tại hàm này
   terminal_println( "Click Blue button to continue!", 200 ) ;
-  while( HAL_GPIO_ReadPin(user_button_GPIO_Port, user_button_Pin) == 1 ) {}
+  while( HAL_GPIO_ReadPin(user_button_GPIO_Port, user_button_Pin) == 1 ) {
+	  HAL_GPIO_TogglePin(user_led_GPIO_Port, user_led_Pin ) ;
+	  HAL_Delay(100) ;
+  }
   checkAndjumptoNewFW( ifHaveNewVersion ) ;
 
   /* USER CODE END 2 */
@@ -229,6 +250,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 /*__________________________________________________________________________________________________________________________________________*/
 void checkAndjumptoNewFW( _Bool _ifHaveNewFW ) {
+	terminal_println( "Jumping... ", 200 ) ;
 	if ( _ifHaveNewFW == 1 ) {
 	  HAL_RCC_DeInit() ;
 	  HAL_DeInit() ;
@@ -267,6 +289,7 @@ char *getCurrentVersion() {
 	memcpy( secondDW, Flash_read_doubleWord(0x080FA008), 8 ) ;
 	memcpy( thirdDW, Flash_read_doubleWord(0x080FA010), 8 ) ;
 
+	// Add and filter version name
 	for( int i = 0 ; i < 8 ; i++ )
 		version[i] = firstDW[i] ;
 	for( int i = 0 ; i < 8 ; i++ ) {
@@ -288,16 +311,21 @@ char *getCurrentVersion() {
 
 
 /*__________________________________________________________________________________________________________________________________________*/
-char *getCheckVersion() {
+char *getOnSimVersion() {
 	// version: 1.0.0FF
-	static char version[24] ;
-	memset( version, 0 , 24 ) ;
+	static char version[25] ;
+	memset( version, 0 , 25 ) ;
 
 	sim7600_sendCmd( "AT+FSCD=E:\r", "OK", 2000 ) ;
 	sim7600_sendCmd( "AT+FSLS\r", "OK", 2000 ) ;
 
 	HAL_Delay(100) ;
 	memcpy( version, strstr( sim7600_read(), "datalogger" ), 24 ) ;
+
+	// filter version name
+	for( int i = 0 ; i < 24 ; i++ )
+		if( checkFWnameFormat( version[i] ) == false )
+			version[i] = 0x00 ;
 
 	return version ;
 }

@@ -51,7 +51,7 @@ using namespace std;
 Sim7600 Sim7600( &huart1 ) ;
 Terminal Terminal( &huart2 ) ;
 
-uint32_t appFW_BaseAddress = 0x0803E800; ;
+uint32_t appFW_BaseAddress = 0x0803E800;
 
 struct BF_dWordHArrTypeDef {
 	bool isLastDWord = false ;
@@ -62,7 +62,13 @@ uint8_t parseToHex( char c0, char c1 ) ;
 
 BF_dWordHArrTypeDef CS_getDoubleWord( uint32_t _address ) ;
 
-bool CF_writeBFFWtoFlash() ;
+bool CF_writeBFFWtoFlash( uint32_t _baseAddress ) ;
+
+char *getCurrentVersion() ;
+
+char *getOnSimVersion() ;
+
+bool checkFWnameFormat( char _character ) ;
 
 /* USER CODE END PV */
 
@@ -85,7 +91,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) ;
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-//	SCB->VTOR = (uint32_t)0x08040000;
+	SCB->VTOR = (uint32_t)0x08019000;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -112,47 +118,77 @@ int main(void)
   Sim7600.init() ;
   Terminal.init() ;
 
+  Terminal.println( "----------------------------------------------------------------------------------------------------------------" ) ;
+  Terminal.println( "                                             FIRMWARE OVER THE AIR UPDATE" ) ;
+  Terminal.println( "----------------------------------------------------------------------------------------------------------------" ) ;
+  Terminal.println( "Booting on...\nPlease wait for 30 second !" ) ;
+
+  Sim7600.sendCmd( "AT+CRESET", "", 200 ) ;
+  HAL_Delay(30000) ;
+  Sim7600.sendCmd( "AT", "OK", 200 ) ;
+  Sim7600.sendCmd( "AT+FSCD=E:", "OK", 200 ) ;
+  Sim7600.sendCmd( "AT+CATR=1", "OK", 200 ) ;
+  Sim7600.memreset() ;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	// First config
-  Sim7600.sendCmd( "AT", "OK", 200 ) ;
-  Sim7600.sendCmd( "AT+FSCD=E:", "OK", 200 ) ;
-  Sim7600.sendCmd( "AT+CATR=1", "OK", 200 ) ;
+	// Code start here :
+
+
+  char curVersionOnFLASH[24] = {0} ;
+  memcpy( curVersionOnFLASH, getCurrentVersion(), 24 ) ;
+
+  char onSimVersion[25] = {0} ;
+  memcpy( onSimVersion, getOnSimVersion(), 24 ) ;
+
+  Terminal.println( "Checking..." ) ;
+  if( strstr( onSimVersion, curVersionOnFLASH ) == NULL ) {
+	  // Start write firmware tai day
+	  Terminal.println( "*New program version detected!\nPage ereasing... " ) ;
+	  for( int i = 0; i <= 150; i++ )
+		  Flash_erase( i + 125 ) ;
+
+	  Terminal.print( "Done.\nNow flashing... " ) ;
+	  if( CF_writeBFFWtoFlash( appFW_BaseAddress ) == true )
+		  Terminal.println( "...Flash successful!" ) ;
+	  else
+		  Terminal.println( "...Flash failed! Please try again!" ) ;
+
+	  for( int i = 0 ; i < 6 ; i++ ) {
+		  HAL_GPIO_TogglePin( user_led_GPIO_Port,  user_led_Pin ) ;
+		  HAL_Delay(500) ;
+
+	  }
+
+	  HAL_GPIO_WritePin( user_led_GPIO_Port,  user_led_Pin, (GPIO_PinState)0 ) ;
+
+	  // lưu lại firmware hiện tại
+	  Terminal.println( "Saving... " ) ;
+	  char savedVersion[25] = {0} ;
+	  HAL_Delay(1000) ;
+	  memcpy( savedVersion, getOnSimVersion(), 24 ) ;
+	  Flash_erase(500) ;
+	  HAL_Delay(1000) ;
+	  Flash_write( 0x080FA000, (const uint8_t*)savedVersion, strlen( savedVersion ) ) ;
+	  Terminal.print( "Done" ) ;
+
+	  Sim7600.sendCmd( "AT+CRESET", "", 100 ) ;
+	  HAL_NVIC_SystemReset() ;
+
+  }else {
+	  Terminal.println( "Firmware version is up to date." ) ;
+	  HAL_NVIC_SystemReset() ;
+  }
+
+
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  if( Sim7600.rxDone_Flag == true ) {
-//		  Terminal.println( Sim7600.rxData.c_str() ) ;
-		  Sim7600.memreset() ;
-	  }
 
-	  if( HAL_GPIO_ReadPin( user_btn_GPIO_Port, user_btn_Pin ) == 0 ) {
-		  HAL_Delay( 200 ) ;
-		  Terminal.println( "(*)(*)(*) Requested write new firmware to flash !" ) ;
-		  Terminal.println( "Erasing... " ) ;
-		  for( int i = 0; i <= 222; i++ ) {
-			  Flash_erase( 31 + i ) ;
-		  }
-
-		  Terminal.print( "Done.\nNow flashing... " ) ;
-		  if( CF_writeBFFWtoFlash() == true )
-			  Terminal.println( "...Flash successful!" ) ;
-		  else
-			  Terminal.println( "...Flash failed! Please try again!" ) ;
-
-		  for( int i = 0 ; i < 6 ; i++ ) {
-			  HAL_GPIO_TogglePin( user_led_GPIO_Port,  user_led_Pin ) ;
-			  HAL_Delay(500) ;
-		  }
-		  HAL_GPIO_WritePin( user_led_GPIO_Port,  user_led_Pin, (GPIO_PinState)0 ) ;
-		  Sim7600.sendCmd( "AT+CRESET", "", 100 ) ;
-		  HAL_NVIC_SystemReset() ;
-
-	  }
   }
   /* USER CODE END 3 */
 }
@@ -173,7 +209,13 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+  RCC_OscInitStruct.PLL.PLLM = 1;
+  RCC_OscInitStruct.PLL.PLLN = 10;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV7;
+  RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV2;
+  RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -182,12 +224,12 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
   {
     Error_Handler();
   }
@@ -244,23 +286,23 @@ uint8_t parseToHex( char c0, char c1 ){
 
 /*____________________________________________________________________________________________________________________________________________*/
 BF_dWordHArrTypeDef CS_getDoubleWord( uint32_t _address ) {
-	static BF_dWordHArrTypeDef result = { 0, 0 } ;
+	static BF_dWordHArrTypeDef result ;
 
 	result.isLastDWord = false ;
 	memset( result.data, 0x00, 8 ) ;
 
 	// Tạo câu lệnh CMD để lấy dữ liệu recode thứ location
-	char cmd[ strlen( FIRMWARE_PATH ) + 30 ] = {0} ;
-	sprintf( cmd, "AT+CFTRANTX=\"%s\",%lu,8", FIRMWARE_PATH, _address ) ;
+	static char fwName[25] = {0} ;
+	memcpy( fwName, getOnSimVersion(), 24 ) ;
+
+	char cmd[ strlen( fwName ) + 30 ] = {0} ;
+	sprintf( cmd, "AT+CFTRANTX=\"E:/%s\",%lu,8\r\n", fwName, _address ) ;
 	// không thể dùng strstr "OK"để kiểm tra Sim7600.sendCmd đúng hay không được, vì gặp ký tự NULL ( 0x00 ) là nó dừng
 	// nhưng dữ liệu firmware của chúng ta chứa ký tự null là chuyện đương nhiên -> ko hợp lý . Nên chỉ gửi thôi, ko kiểm tra.
-
-	Sim7600.memreset() ;
 	Sim7600.sendCmd( cmd, "+CFTRANTX: DATA", 5000 ) ;
-	HAL_Delay(3) ;
 
 	char dataZone[100] = {0} ;
-	memcpy( dataZone, strstr( Sim7600.rxData.c_str(), "DATA" ), 100 ) ;
+	memcpy( dataZone, strstr( Sim7600.rxData.c_str(), "DATA" ), 75 ) ;
 
 	// Check if is last double word of .bin file
 	uint8_t restNbData = parseToHex( dataZone[6], dataZone[7] ) ;
@@ -279,18 +321,16 @@ BF_dWordHArrTypeDef CS_getDoubleWord( uint32_t _address ) {
 	}
 
 
-	return result ;
+	return (BF_dWordHArrTypeDef)result ;
 }
 
 
 
 /*____________________________________________________________________________________________________________________________________________*/
-bool CF_writeBFFWtoFlash() {
+bool CF_writeBFFWtoFlash( uint32_t _baseAddress ) {
 	// Before start
 	while( Sim7600.sendCmd( "AT", "OK", 100 ) == false )
 	  HAL_Delay( 2000 ) ;
-	Sim7600.sendCmd( "AT+FSCD=E:", "OK", 200 ) ;
-	Sim7600.sendCmd( "AT+CATR=1", "OK", 200 ) ;
 
 	bool result = false ;
 	uint32_t address = 0x00 ;
@@ -298,11 +338,12 @@ bool CF_writeBFFWtoFlash() {
 	while(1) {
 		// Lấy double word
 		wDWord = CS_getDoubleWord( address ) ;
+		HAL_Delay(10) ;
 //		Terminal.println( "Get double word done!" ) ;
 
 		// Kiểm tra có phải đã đến data cuối cùng chưa ?
 		if( ( wDWord.isLastDWord == true ) && ( address > 0x800 ) ) {
-			Flash_write_doubleWord( address + appFW_BaseAddress, (const uint8_t*)wDWord.data ) ;
+			Flash_write_doubleWord( address + _baseAddress, (const uint8_t*)wDWord.data ) ;
 			result = true ;
 			break ;
 
@@ -312,7 +353,7 @@ bool CF_writeBFFWtoFlash() {
 
 		// còn nếu chưa thì cứ tiếp tục
 		}else {
-			Flash_write_doubleWord( address + appFW_BaseAddress, (const uint8_t*)wDWord.data ) ;
+			Flash_write_doubleWord( address + _baseAddress, (const uint8_t*)wDWord.data ) ;
 			address += 0x08 ;
 		}
 //		Terminal.println( "Write to flash done!" ) ;
@@ -350,7 +391,100 @@ bool CF_writeBFFWtoFlash() {
 
 
 
+/*__________________________________________________________________________________________________________________________________________*/
+char *getCurrentVersion() {
+	// version: 1.0.0FF
+	static char version[24] ;
+	memset( version, 0 , 24 ) ;
 
+	char firstDW[8] = {0} ;
+	char secondDW[8] = {0} ;
+	char thirdDW[8] = {0} ;
+	memcpy( firstDW, Flash_read_doubleWord(0x080FA000), 8 ) ;
+	memcpy( secondDW, Flash_read_doubleWord(0x080FA008), 8 ) ;
+	memcpy( thirdDW, Flash_read_doubleWord(0x080FA010), 8 ) ;
+
+	for( int i = 0 ; i < 8 ; i++ )
+		version[i] = firstDW[i] ;
+	for( int i = 0 ; i < 8 ; i++ ) {
+		if( checkFWnameFormat( (char)secondDW[i] ) == 1 )
+			version[ i + 8 ] = secondDW[i] ;
+		else
+			version[ i + 8 ] = 0x00 ;
+	}
+	for( int i = 0 ; i < 8 ; i++ ) {
+		if( checkFWnameFormat( thirdDW[i] ) == 1 )
+			version[ i + 16 ] = thirdDW[i] ;
+		else
+			version[ i + 16 ] = 0x00 ;
+	}
+
+	return version ;
+}
+
+
+
+/*__________________________________________________________________________________________________________________________________________*/
+char *getOnSimVersion() {
+	// version: 1.0.0FF
+	static char version[25] ;
+	memset( version, 0 , 25 ) ;
+
+	Sim7600.sendCmd( "AT\r", "OK", 2000 ) ;
+	Sim7600.sendCmd( "AT+FSCD=E:\r", "OK", 2000 ) ;
+	Sim7600.sendCmd( "AT+FSLS\r", "OK", 2000 ) ;
+
+	memcpy( version, strstr( Sim7600.rxData.c_str(), "datalogger" ), 24 ) ;
+
+	// filter version name
+	for( int i = 0 ; i < 24 ; i++ )
+		if( checkFWnameFormat( version[i] ) == false )
+			version[i] = 0x00 ;
+
+	return version ;
+}
+
+
+
+/*__________________________________________________________________________________________________________________________________________*/
+// datalogger_1.1.1.bin => d,a,t,l,o,g,e,r,b,i,n,_,.,'number'
+bool checkFWnameFormat( char _character ) {
+	switch ( _character ) {
+		case 'd':
+			return 1 ;
+		case 'a':
+			return 1 ;
+		case 't':
+			return 1 ;
+		case 'l':
+			return 1 ;
+		case 'o':
+			return 1 ;
+		case 'g':
+			return 1 ;
+		case (char)'e':
+			return 1 ;
+		case 'r':
+			return 1 ;
+		case 'b':
+			return 1 ;
+		case 'i':
+			return 1 ;
+		case 'n':
+			return 1 ;
+		case '_':
+			return 1 ;
+		case '.':
+			return 1 ;
+
+		default:
+			if( ( _character >= 0x30 && _character <= 0x39 ) )
+				return 1 ;
+			else
+				return 0 ;
+			break;
+	}
+}
 
 
 

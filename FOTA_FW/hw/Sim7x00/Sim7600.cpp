@@ -56,8 +56,8 @@ bool Sim7600::sendCmd( const char* _cmd, const char* _expectedAnswer, unsigned i
     memreset() ;
 
     // Bắt đầu gửi lệnh AT ngay tại đây
-    char cmd[ strlen( _cmd ) + 4 ] = {0} ;
-    sprintf( cmd, "%s\r\n", _cmd ) ;
+    char cmd[ strlen( _cmd ) + 2 ] = {0} ;
+    sprintf( cmd, "%s\r\r", _cmd ) ;
     HAL_UART_Transmit( huartx, (uint8_t*)cmd, strlen (cmd), _timeout) ;
 
     // lệnh này để bắt đầu lấy mốc t.g để check Timeout
@@ -74,6 +74,7 @@ bool Sim7600::sendCmd( const char* _cmd, const char* _expectedAnswer, unsigned i
 			answer = 1;
 	}
 
+    HAL_Delay(1) ;
     return answer;
 }
 

@@ -92,6 +92,16 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  HAL_UART_Transmit(&huart2, (uint8_t*)"\n----------------------------------------------------------------------------------------------------------------"
+		  ,strlen("\n----------------------------------------------------------------------------------------------------------------"), 200 ) ;
+
+  HAL_UART_Transmit(&huart2, (uint8_t*)"\n                                      DATALOGGER FIRMWARE - VERSION: 1.0.1"
+		  ,strlen("\n                                      DATALOGGER FIRMWARE - VERSION: 1.0.1"), 200 ) ;
+
+  HAL_UART_Transmit(&huart2, (uint8_t*)"\n----------------------------------------------------------------------------------------------------------------"
+		  ,strlen("\n----------------------------------------------------------------------------------------------------------------"), 200 ) ;
+
+
 
   HAL_UART_Transmit(&huart2, (uint8_t*)"\nThis is datalogger_1.0.1 firmware version", strlen("\nThis is datalogger_1.0.1 firmware version"), 2000 ) ;
 

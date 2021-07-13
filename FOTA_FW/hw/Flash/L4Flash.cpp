@@ -14,7 +14,10 @@ void Flash_erase( uint32_t _page ) {
 	static uint32_t PageEraseERROR_Addr  ;
 	HAL_FLASH_Unlock() ;
 
-	EraseStruct.Banks = FLASH_BANK_BOTH ;
+	if( (int)_page <= 255 )
+		EraseStruct.Banks = FLASH_BANK_1 ;
+	else
+		EraseStruct.Banks = FLASH_BANK_2 ;
 	EraseStruct.NbPages = 1 ;
 	EraseStruct.TypeErase = FLASH_TYPEERASE_PAGES ;
 	EraseStruct.Page = _page ;
@@ -99,7 +102,7 @@ char* Flash_read_doubleWord( uint64_t _Address ) {
 	*data = *(__IO uint64_t *)_Address ;
 
 	for( int i = 0; i < 8; i++ ){
-		temp[ 7-i ] &= data[0] ;
+		temp[i] = data[0] ;
 		data[0] >>= 8 ;
 	}
 
@@ -109,15 +112,3 @@ char* Flash_read_doubleWord( uint64_t _Address ) {
 
 
 
-/*_________________________________________________________________________________________________________________________________*/
-void  Flash_read_str( uint64_t _fromAddress, uint64_t _toAddress, char* _result ) {
-	unsigned int size = ( unsigned int )( _toAddress - _fromAddress )  ;
-	char result[ size + 1 ] ;
-	memset( result, 0, size ) ;
-
-	for( unsigned int i = 0; i < size; i += 8 ) {
-		strcat( result, Flash_read_doubleWord( _fromAddress + i ) ) ;
-	}
-
-	memcpy( _result, result, strlen( result ) ) ;
-}

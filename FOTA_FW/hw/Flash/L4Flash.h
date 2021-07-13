@@ -21,8 +21,6 @@ void  Flash_write( uint32_t _address, const uint8_t* _data, int _dataLength ) ;
 
 char* Flash_read_doubleWord( uint64_t _Address ) ;
 
-void  Flash_read_str( uint64_t _fromAddress, uint64_t _toAddress, char* _result ) ;
-
 
 
 #endif /* FLASH_L4FLASH_H_ */
