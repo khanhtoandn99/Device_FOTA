@@ -39,7 +39,7 @@ _Bool sim7600_sendCmd( const char* _cmd, const char* _expectedAnswer, unsigned i
 
     sim7600_memreset() ;
 
-    HAL_UART_Transmit( &SIM_UART_DEBUG, (uint8_t*)("\n-> @sim7600e: "), strlen ("\n-> @sim7600e: "), _timeOut) ;
+    HAL_UART_Transmit( &SIM_UART_DEBUG, (uint8_t*)("\n@sim7600e: "), strlen ("\n@sim7600e: "), _timeOut) ;
     HAL_UART_Transmit( &SIM_UART_DEBUG, (uint8_t*)_cmd, strlen (_cmd), _timeOut) ;
     HAL_UART_Transmit( &SIM_UART_DEBUG, (uint8_t*)("\n"), strlen ("\n"), _timeOut) ;
 

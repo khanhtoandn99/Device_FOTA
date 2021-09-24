@@ -1,10 +1,10 @@
-22:12:00 **** Incremental Build of configuration Debug for project Bootloader_FW ****
+15:33:36 **** Incremental Build of configuration Debug for project Bootloader_FW ****
 make -j4 all 
 arm-none-eabi-size   Bootloader_FW.elf 
    text	   data	    bss	    dec	    hex	filename
-  41620	    496	   4944	  47060	   b7d4	Bootloader_FW.elf
+  41708	    496	   4944	  47148	   b82c	Bootloader_FW.elf
 Finished building: default.size.stdout
  
 
-22:12:01 Build Finished. 0 errors, 0 warnings. (took 698ms)
+15:33:37 Build Finished. 0 errors, 0 warnings. (took 773ms)
 

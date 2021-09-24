@@ -125,8 +125,10 @@ int main(void)
   Terminal.println( "----------------------------------------------------------------------------------------------------------------" ) ;
   Terminal.println( "Booting on...\nPlease wait for 30 second !" ) ;
 
-  Sim7600.sendCmd( "AT+CRESET", "", 200 ) ;
-  HAL_Delay(30000) ;
+  if( Sim7600.sendCmd( "AT", "OK", 1000 ) != true ) {
+	  Sim7600.sendCmd( "AT+CRESET", "", 200 ) ;
+	  HAL_Delay(30000) ;
+  }
 
 //	Flash_erase(500) ;
 //	HAL_Delay(1000) ;
@@ -165,9 +167,8 @@ int main(void)
 		  Terminal.println( "...Flash failed! Please try again!" ) ;
 
 	  for( int i = 0 ; i < 6 ; i++ ) {
-		  HAL_GPIO_TogglePin( user_led_GPIO_Port,  user_led_Pin ) ;
+		  HAL_GPIO_TogglePin( user_led_GPIO_Port, user_led_Pin ) ;
 		  HAL_Delay(500) ;
-
 	  }
 
 	  HAL_GPIO_WritePin( user_led_GPIO_Port,  user_led_Pin, (GPIO_PinState)0 ) ;

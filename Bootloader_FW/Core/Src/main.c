@@ -121,8 +121,10 @@ int main(void)
 //  Flash_write( 0x080FA000, x, strlen((char*)x) ) ;
 //  while(1){}
 
-  sim7600_sendCmd( "AT+CRESET\r", "", 1000 ) ;
-  HAL_Delay(30000) ;
+  if( sim7600_sendCmd( "AT\r", "OK", 1000 ) != true ) {
+	sim7600_sendCmd( "AT+CRESET\r", "", 1000 ) ;
+	HAL_Delay(30000) ;
+  }
 
   terminal_println( "Checking on current version ... ", 200 ) ;
   char currentVersion[24] = {0} ;
@@ -133,7 +135,7 @@ int main(void)
   terminal_print( " Done.", 2000 ) ;
 
   // 2.2. Lấy dữ liệu version trên module sim đồng thời kiểm tra
-  terminal_println( "Checking cloud version ... ", 200 ) ;
+  terminal_println( "Checking version on SIM memory ... ", 200 ) ;
   _Bool ifHaveNewVersion = false ;
   // Lấy version trên module sim
   char onSimVersion[24] = {0} ;
@@ -152,8 +154,8 @@ int main(void)
 		  ifHaveNewVersion = true ;
 	  // Nếu không có version mới
 	  }else {
-		  terminal_println( "Application version is up to date.\n", 200 ) ;
-		  terminal_println( "Going to Datalogger application firmware ...", 200 ) ;
+		  terminal_println( "Datalogger firmware version is up to date.\n", 200 ) ;
+		  terminal_println( "Going to running firmware ...", 200 ) ;
 		  ifHaveNewVersion = false ;
 	  }
   // Đã bị lỗi mất file firmware
@@ -169,7 +171,7 @@ int main(void)
   terminal_println( "Click Blue button to continue!", 200 ) ;
   while( HAL_GPIO_ReadPin(user_button_GPIO_Port, user_button_Pin) == 1 ) {
 	  HAL_GPIO_TogglePin(user_led_GPIO_Port, user_led_Pin ) ;
-	  HAL_Delay(100) ;
+	  HAL_Delay(500) ;
   }
   checkAndjumptoNewFW( ifHaveNewVersion ) ;
 
@@ -244,6 +246,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		sim7600_irqProcess() ;
 	else if( huart->Instance == USART2 )
 		terminal_irqProcess() ;
+
 }
 
 
